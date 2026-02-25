@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="theme-color" content="#0A0000"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="MICROJUK"/>
+  <title>MICROJUK | מחשבון מחיר גליל</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:       #CC0000;
+      --red-light: #FF4444;
+      --red-dark:  #990000;
+      --black:     #0A0000;
+      --black-mid: #1C0000;
+      --card-bg:   rgba(255,255,255,0.06);
+      --card-border: rgba(204,0,0,0.35);
+      --label:     #FFAAAA;
+      --sublabel:  #FFCCCC;
+      --muted:     #AA6666;
+      --footer:    #663333;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-mid) 50%, var(--black) 100%);
+      color: #fff;
+      direction: rtl;
+    }
+
+    body {
+      padding: 16px;
+      padding-bottom: 32px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 24px rgba(204,0,0,0.12);
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .gear {
+      font-size: 38px;
+      background: linear-gradient(to left, #fff, var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      direction: ltr;
+      background: linear-gradient(to left, #fff, var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 3px;
+      direction: rtl;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 18px;
+    }
+
+    /* ── LABELS & INPUTS ── */
+    .field { margin-bottom: 14px; }
+
+    .field-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--label);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid var(--red);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 16px;
+      font-family: inherit;
+      padding: 11px 14px;
+      outline: none;
+      direction: ltr;
+      text-align: right;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--red-light);
+      box-shadow: 0 0 0 3px rgba(204,0,0,0.25);
+    }
+
+    input[type="number"]::placeholder { color: rgba(255,180,180,0.4); }
+
+    /* hide number spinners */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ── BUTTON ── */
+    .btn-calc {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(to left, var(--red), var(--red-dark));
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-calc:active { opacity: 0.78; transform: scale(0.98); }
+
+    /* ── ERROR ── */
+    .error-msg {
+      display: none;
+      color: var(--red-light);
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ── RESULTS CARD ── */
+    #results-card { display: none; }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .result-row-label {
+      font-size: 15px;
+      color: var(--sublabel);
+    }
+
+    .result-row-value {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: Consolas, 'Courier New', monospace;
+      color: #fff;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to left, transparent, var(--red), transparent);
+      margin: 12px 0;
+    }
+
+    .price-ex-vat { color: #FF6666; font-size: 18px; font-weight: 700; font-family: Consolas, monospace; }
+    .vat-val      { color: var(--muted); font-size: 16px; font-weight: 600; font-family: Consolas, monospace; }
+
+    /* Final price box */
+    .final-box {
+      background: linear-gradient(to left, #1A0000, #3D0000);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .final-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: linear-gradient(to left, #fff, var(--red)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+    }
+
+    .final-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .final-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .final-value {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: Consolas, 'Courier New', monospace;
+      background: linear-gradient(to left, #fff, var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── DISCOUNT CARD ── */
+    #discount-card { display: none; }
+
+    .discount-result-box {
+      background: linear-gradient(to left, #001A00, #003D00);
+      border: 1px solid #00CC55;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: none;
+      margin-top: 4px;
+    }
+
+    .discount-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .discount-row-label { font-size: 15px; color: #88FFBB; }
+    .discount-row-value { font-size: 16px; font-weight: 600; font-family: Consolas, monospace; color: #88FFBB; }
+
+    .discount-final-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0,200,80,0.25);
+    }
+
+    .discount-final-label { font-size: 16px; font-weight: 700; color: #fff; }
+
+    .discount-final-value {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: Consolas, monospace;
+      background: linear-gradient(to left, #fff, #00CC55);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      color: var(--footer);
+      font-size: 12px;
+      margin-top: 8px;
+      direction: ltr;
+    }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(204,0,0,0.15);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--label);
+    }
+
+    #install-banner button {
+      background: var(--red);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @media (min-width: 480px) {
+      body { max-width: 460px; margin: 0 auto; padding: 24px 16px; }
+      .brand-name { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Install Banner (shows on supported browsers) -->
+  <div id="install-banner">
+    <span>📲 הוסף לשולחן הבית שלך</span>
+    <button id="install-btn">התקן</button>
+  </div>
+
+  <!-- Header -->
+  <div class="card">
+    <div class="header">
+      <div class="gear">⚙</div>
+      <div>
+        <div class="brand-name">M I C R O J U K</div>
+        <div class="brand-sub">מחשבון מחיר גליל</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="section-title">הזן פרטי גליל</div>
+
+    <div class="field">
+      <label class="field-label" for="cylinderLength">📏 אורך גליל (סנטימטרים)</label>
+      <input type="number" id="cylinderLength" placeholder="לדוגמה: 150" min="0" step="any"/>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="runningMeter">↔ מטר רץ</label>
+      <input type="number" id="runningMeter" placeholder="לדוגמה: 1.5" min="0" step="any"/>
+    </div>
+
+    <div class="field" style="margin-bottom: 20px;">
+      <label class="field-label" for="pricePerMeter">₪ מחיר למטר</label>
+      <input type="number" id="pricePerMeter" placeholder="לדוגמה: 80" min="0" step="any"/>
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">🔢 חשב מחיר</button>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <!-- Results Card -->
+  <div class="card" id="results-card">
+    <div class="section-title">✅ תוצאות החישוב</div>
+
+    <div class="result-row">
+      <span class="result-row-label">אורך גליל</span>
+      <span class="result-row-value" id="res-length"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">מטר רץ</span>
+      <span class="result-row-value" id="res-running"></span>
+    </div>
+    <div class="result-row" style="margin-bottom: 12px;">
+      <span class="result-row-label">מחיר למטר</span>
+      <span class="result-row-value" id="res-price-per-meter"></span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-row" style="margin-bottom: 8px;">
+      <span class="result-row-label" style="font-size:15px;">מחיר ללא מע"מ</span>
+      <span class="price-ex-vat" id="res-ex-vat"></span>
+    </div>
+    <div class="result-row" style="margin-bottom: 12px;">
+      <span class="result-row-label" style="color: var(--muted);">מע"מ (18%)</span>
+      <span class="vat-val" id="res-vat"></span>
+    </div>
+
+    <div class="final-box">
+      <div class="final-row">
+        <span class="final-label">💰 מחיר כולל מע"מ</span>
+        <span class="final-value" id="res-inc-vat"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discount Card -->
+  <div class="card" id="discount-card">
+    <div class="section-title">🏷️ הנחה ללקוח</div>
+
+    <div class="field" style="margin-bottom: 16px;">
+      <label class="field-label" for="discountPct">% אחוז הנחה</label>
+      <input type="number" id="discountPct" placeholder="לדוגמה: 10" min="0" max="100" step="any" oninput="applyDiscount()"/>
+    </div>
+
+    <div class="discount-result-box" id="discount-result-box">
+      <div class="discount-row">
+        <span class="discount-row-label" id="discount-pct-label"></span>
+        <span class="discount-row-value" id="discount-amount"></span>
+      </div>
+      <div class="discount-final-row">
+        <span class="discount-final-label">💚 מחיר אחרי הנחה</span>
+        <span class="discount-final-value" id="price-after-discount"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">© 2026 MICROJUK Israel · Internal Use Only</div>
+
+  <script>
+    function fmt(n) {
+      return '₪' + n.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculate() {
+      const errEl = document.getElementById('error-msg');
+      const resCard = document.getElementById('results-card');
+
+      const lengthCm     = parseFloat(document.getElementById('cylinderLength').value);
+      const runningMeter = parseFloat(document.getElementById('runningMeter').value);
+      const pricePerMeter= parseFloat(document.getElementById('pricePerMeter').value);
+
+      // Validate
+      if (isNaN(lengthCm) || lengthCm <= 0 ||
+          isNaN(runningMeter) || runningMeter <= 0 ||
+          isNaN(pricePerMeter) || pricePerMeter <= 0) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'אנא הזן ערכים חיוביים בכל השדות';
+        resCard.style.display = 'none';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      document.getElementById('discount-card').style.display = 'none';
+
+      const lengthM      = lengthCm / 100;
+      const priceExVat   = lengthM * runningMeter * pricePerMeter;
+      const vatAmount    = priceExVat * 0.18;
+      const priceIncVat  = priceExVat * 1.18;
+
+      _priceIncVat = priceIncVat;
+
+      document.getElementById('res-length').textContent          = lengthCm.toLocaleString('he-IL') + ' ס"מ';
+      document.getElementById('res-running').textContent         = runningMeter.toLocaleString('he-IL') + ' מ\'';
+      document.getElementById('res-price-per-meter').textContent = fmt(pricePerMeter);
+      document.getElementById('res-ex-vat').textContent          = fmt(priceExVat);
+      document.getElementById('res-vat').textContent             = fmt(vatAmount);
+      document.getElementById('res-inc-vat').textContent         = fmt(priceIncVat);
+
+      resCard.style.display = 'block';
+
+      // show discount card, reset input
+      document.getElementById('discount-card').style.display = 'block';
+      document.getElementById('discountPct').value = '';
+      document.getElementById('discount-result-box').style.display = 'none';
+
+      resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    let _priceIncVat = 0;
+
+    function applyDiscount() {
+      const pct = parseFloat(document.getElementById('discountPct').value);
+      const box = document.getElementById('discount-result-box');
+
+      if (isNaN(pct) || pct < 0 || pct > 100) {
+        box.style.display = 'none';
+        return;
+      }
+
+      const discountAmount   = _priceIncVat * pct / 100;
+      const priceAfterDiscount = _priceIncVat - discountAmount;
+
+      document.getElementById('discount-pct-label').textContent  = `הנחה (${pct}%)`;
+      document.getElementById('discount-amount').textContent      = `- ${fmt(discountAmount)}`;
+      document.getElementById('price-after-discount').textContent = fmt(priceAfterDiscount);
+
+      box.style.display = 'block';
+    }
+
+    // Allow Enter key to calculate
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+
+    // PWA install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-banner').style.display = 'flex';
+    });
+
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') document.getElementById('install-banner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
+
+</body>
+</html>
