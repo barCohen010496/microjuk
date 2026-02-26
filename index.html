@@ -355,25 +355,18 @@
     .calc-expr { color: #6C7086; font-size: 12px; min-height: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .calc-main { color: #CDD6F4; font-size: 32px; font-weight: 300; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .calc-angle {
-      display: flex;
-      justify-content: flex-end;
-      gap: 14px;
-      margin-bottom: 6px;
-    }
-    .calc-angle label { color: #89B4FA; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 3px; direction: ltr; }
-
     .calc-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      direction: ltr;
     }
 
     .cb {
-      height: 44px;
+      height: 56px;
       border: none;
-      border-radius: 8px;
-      font-size: 13px;
+      border-radius: 10px;
+      font-size: 18px;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -384,7 +377,6 @@
 
     .cb-num { background: #313244; color: #CDD6F4; }
     .cb-op  { background: #45475A; color: #CDD6F4; }
-    .cb-fn  { background: #313244; color: #89B4FA; font-size: 11px; }
     .cb-eq  { background: #89B4FA; color: #1E1E2E; }
     .cb-clr { background: #F38BA8; color: #1E1E2E; }
     .cb-acc { background: #FAB387; color: #1E1E2E; }
@@ -528,73 +520,45 @@
     </div>
   </div>
 
-  <!-- Scientific Calculator Button -->
-  <button class="btn-sci" onclick="document.getElementById('calc-modal').classList.add('open')">🧮 מחשבון מדעי</button>
+  <!-- Calculator Button -->
+  <button class="btn-sci" onclick="document.getElementById('calc-modal').classList.add('open')">🧮 מחשבון</button>
 
-  <!-- Scientific Calculator Modal -->
+  <!-- Calculator Modal -->
   <div id="calc-modal" onclick="if(event.target===this)this.classList.remove('open')">
     <div class="calc-panel">
       <button class="calc-close" onclick="document.getElementById('calc-modal').classList.remove('open')">✕</button>
-      <div class="calc-title">🧮 Scientific Calculator</div>
+      <div class="calc-title">🧮 מחשבון</div>
 
       <div class="calc-display">
         <div class="calc-expr" id="sc-expr"></div>
         <div class="calc-main" id="sc-main">0</div>
       </div>
 
-      <div class="calc-angle">
-        <label><input type="radio" name="angle" value="deg" checked onchange="scAngle='deg'"> DEG</label>
-        <label><input type="radio" name="angle" value="rad" onchange="scAngle='rad'"> RAD</label>
-      </div>
-
       <div class="calc-grid">
-        <!-- Row 0: trig -->
-        <button class="cb cb-fn" onclick="scFn('sin')">sin</button>
-        <button class="cb cb-fn" onclick="scFn('cos')">cos</button>
-        <button class="cb cb-fn" onclick="scFn('tan')">tan</button>
-        <button class="cb cb-fn" onclick="scFn('log')">log</button>
-        <button class="cb cb-fn" onclick="scFn('ln')">ln</button>
-        <!-- Row 1: inverse trig -->
-        <button class="cb cb-fn" onclick="scFn('asin')">sin⁻¹</button>
-        <button class="cb cb-fn" onclick="scFn('acos')">cos⁻¹</button>
-        <button class="cb cb-fn" onclick="scFn('atan')">tan⁻¹</button>
-        <button class="cb cb-fn" onclick="scFn('sqrt')">√</button>
-        <button class="cb cb-fn" onclick="scFn('sq')">x²</button>
-        <!-- Row 2: power -->
-        <button class="cb cb-fn" onclick="scOp('^')">xʸ</button>
-        <button class="cb cb-fn" onclick="scFn('10x')">10ˣ</button>
-        <button class="cb cb-fn" onclick="scFn('ex')">eˣ</button>
-        <button class="cb cb-fn" onclick="scFn('fact')">n!</button>
-        <button class="cb cb-fn" onclick="scFn('inv')">1/x</button>
-        <!-- Row 3: constants + clear -->
-        <button class="cb cb-fn" onclick="scConst('pi')">π</button>
-        <button class="cb cb-fn" onclick="scConst('e')">e</button>
-        <button class="cb cb-acc" onclick="scParen()">( )</button>
-        <button class="cb cb-clr" onclick="scCE()">CE</button>
+        <!-- Row 1 -->
         <button class="cb cb-clr" onclick="scC()">C</button>
-        <!-- Row 4 -->
+        <button class="cb cb-acc" onclick="scNegate()">+/−</button>
+        <button class="cb cb-acc" onclick="scFn('pct')">%</button>
+        <button class="cb cb-op"  onclick="scOp('/')">÷</button>
+        <!-- Row 2 -->
         <button class="cb cb-num" onclick="scNum('7')">7</button>
         <button class="cb cb-num" onclick="scNum('8')">8</button>
         <button class="cb cb-num" onclick="scNum('9')">9</button>
-        <button class="cb cb-op"  onclick="scOp('/')">÷</button>
-        <button class="cb cb-acc" onclick="scBack()">⌫</button>
-        <!-- Row 5 -->
+        <button class="cb cb-op"  onclick="scOp('*')">×</button>
+        <!-- Row 3 -->
         <button class="cb cb-num" onclick="scNum('4')">4</button>
         <button class="cb cb-num" onclick="scNum('5')">5</button>
         <button class="cb cb-num" onclick="scNum('6')">6</button>
-        <button class="cb cb-op"  onclick="scOp('*')">×</button>
-        <button class="cb cb-op"  onclick="scFn('pct')">%</button>
-        <!-- Row 6 -->
+        <button class="cb cb-op"  onclick="scOp('-')">−</button>
+        <!-- Row 4 -->
         <button class="cb cb-num" onclick="scNum('1')">1</button>
         <button class="cb cb-num" onclick="scNum('2')">2</button>
         <button class="cb cb-num" onclick="scNum('3')">3</button>
-        <button class="cb cb-op"  onclick="scOp('-')">−</button>
-        <button class="cb cb-eq"  onclick="scEq()" style="grid-row: span 2; height: auto;">＝</button>
-        <!-- Row 7 -->
-        <button class="cb cb-op"  onclick="scNegate()">+/−</button>
-        <button class="cb cb-num" onclick="scNum('0')">0</button>
-        <button class="cb cb-num" onclick="scDot()">.</button>
         <button class="cb cb-op"  onclick="scOp('+')">+</button>
+        <!-- Row 5 -->
+        <button class="cb cb-num" onclick="scNum('0')" style="grid-column: span 2;">0</button>
+        <button class="cb cb-num" onclick="scDot()">.</button>
+        <button class="cb cb-eq"  onclick="scEq()">=</button>
       </div>
     </div>
   </div>
@@ -676,12 +640,8 @@
     // Allow Enter key to calculate
     document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
 
-    // ── Scientific Calculator ──────────────────────────────────────────
-    let scCurrent = '0', scExpr = '', scStored = 0, scOper = '', scNewEntry = true, scOpenParens = 0;
-    let scAngle = 'deg';
-
-    function scToRad(d) { return d * Math.PI / 180; }
-    function scFromRad(r) { return r * 180 / Math.PI; }
+    // ── Calculator ────────────────────────────────────────────────────
+    let scCurrent = '0', scExpr = '', scStored = 0, scOper = '', scNewEntry = true;
 
     function scUpdate() {
       document.getElementById('sc-main').textContent = scCurrent;
@@ -691,9 +651,8 @@
     function scVal() { return parseFloat(scCurrent) || 0; }
 
     function scShowResult(r) {
-      scCurrent = (r % 1 === 0 && Math.abs(r) < 1e15) ? String(Math.trunc(r)) : r.toPrecision(10).replace(/\.?0+$/, '');
-      scNewEntry = true;
-      scUpdate();
+      scCurrent = (r % 1 === 0 && Math.abs(r) < 1e15) ? String(Math.trunc(r)) : parseFloat(r.toPrecision(10)).toString();
+      scNewEntry = true; scUpdate();
     }
 
     function scNum(d) {
@@ -714,9 +673,9 @@
     }
 
     function scOp(op) {
-      if (!scNewEntry && scOper && op !== '^') scCalc();
+      if (!scNewEntry && scOper) scCalc();
       scStored = scVal(); scOper = op;
-      const d = {'+':'+','-':'−','*':'×','/':'÷','^':'^'}[op] || op;
+      const d = {'+':'+','-':'−','*':'×','/':'÷'}[op] || op;
       scExpr = `${scStored} ${d}`; scNewEntry = true; scUpdate();
     }
 
@@ -729,67 +688,16 @@
         case '-': res = scStored - r; break;
         case '*': res = scStored * r; break;
         case '/': res = r !== 0 ? scStored / r : NaN; break;
-        case '^': res = Math.pow(scStored, r); break;
         default:  res = r;
       }
       scExpr = `${scStored} ${d} ${r} =`; scOper = ''; scStored = 0;
-      if (isNaN(res)) { scCurrent = 'Error'; scNewEntry = true; scUpdate(); return; }
+      if (isNaN(res)) { scCurrent = 'שגיאה'; scNewEntry = true; scUpdate(); return; }
       scShowResult(res);
     }
 
-    function scEq() { if (scOper) scCalc(); }
-
-    function scFn(fn) {
-      const v = scVal();
-      const toR = scAngle === 'deg';
-      let res;
-      switch(fn) {
-        case 'sin':  res = Math.sin(toR ? scToRad(v) : v); break;
-        case 'cos':  res = Math.cos(toR ? scToRad(v) : v); break;
-        case 'tan':  res = Math.tan(toR ? scToRad(v) : v); break;
-        case 'asin': res = toR ? scFromRad(Math.asin(v)) : Math.asin(v); break;
-        case 'acos': res = toR ? scFromRad(Math.acos(v)) : Math.acos(v); break;
-        case 'atan': res = toR ? scFromRad(Math.atan(v)) : Math.atan(v); break;
-        case 'log':  res = Math.log10(v); break;
-        case 'ln':   res = Math.log(v); break;
-        case 'sqrt': res = Math.sqrt(v); break;
-        case 'sq':   res = v * v; break;
-        case '10x':  res = Math.pow(10, v); break;
-        case 'ex':   res = Math.exp(v); break;
-        case 'fact': res = scFactorial(v); break;
-        case 'inv':  res = v !== 0 ? 1 / v : NaN; break;
-        case 'pct':  res = v / 100; break;
-        default:     res = v;
-      }
-      const lbl = {sin:'sin',cos:'cos',tan:'tan',asin:'sin⁻¹',acos:'cos⁻¹',atan:'tan⁻¹',log:'log',ln:'ln',sqrt:'√',sq:'sqr','10x':'10^',ex:'e^',fact:'!',inv:'1/',pct:'%'}[fn] || fn;
-      scExpr = `${lbl}(${v})`;
-      if (isNaN(res) || !isFinite(res)) { scCurrent = 'Error'; scNewEntry = true; scUpdate(); return; }
-      scShowResult(res);
-    }
-
-    function scFactorial(n) {
-      if (n < 0 || n !== Math.floor(n) || n > 170) return NaN;
-      let r = 1; for (let i = 2; i <= n; i++) r *= i; return r;
-    }
-
-    function scConst(c) {
-      scCurrent = c === 'pi' ? Math.PI.toPrecision(10) : Math.E.toPrecision(10);
-      scExpr = c === 'pi' ? 'π' : 'e'; scNewEntry = true; scUpdate();
-    }
-
-    function scParen() {
-      if (scOpenParens === 0 || scNewEntry) { scExpr += '('; scOpenParens++; scNewEntry = true; }
-      else { scExpr += `${scCurrent})`; scOpenParens--; }
-      scUpdate();
-    }
-
-    function scC()  { scCurrent='0'; scExpr=''; scStored=0; scOper=''; scNewEntry=true; scOpenParens=0; scUpdate(); }
-    function scCE() { scCurrent='0'; scNewEntry=true; scUpdate(); }
-    function scBack() {
-      if (scNewEntry || scCurrent.length <= 1) { scCurrent='0'; scNewEntry=true; }
-      else { scCurrent = scCurrent.slice(0,-1); if (scCurrent==='-') scCurrent='0'; }
-      scUpdate();
-    }
+    function scEq()  { if (scOper) scCalc(); }
+    function scFn(fn) { if (fn === 'pct') { scCurrent = String(scVal() / 100); scNewEntry = true; scUpdate(); } }
+    function scC()   { scCurrent='0'; scExpr=''; scStored=0; scOper=''; scNewEntry=true; scUpdate(); }
 
     // PWA install prompt
     let deferredPrompt;
